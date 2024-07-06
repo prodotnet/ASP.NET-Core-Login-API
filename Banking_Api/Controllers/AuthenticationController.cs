@@ -1,10 +1,12 @@
 ﻿using Banking_Api.DataTransferObjects.Accounts;
 using Banking_Api.Jwt;
 using Banking_Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Banking_Api.Controllers
 {
@@ -24,10 +26,22 @@ namespace Banking_Api.Controllers
             _userManager = userManager;
         }
 
+
+       [Authorize]
+       
+        [HttpPost("UserToken")]
+        public async Task<ActionResult<UserDto>> UserToken()
+        {
+            var user = await _userManager.FindByNameAsync(User.FindFirst(ClaimTypes.Email)?.Value);
+            return CreateUserDto(user);
+        }
+
+
+
         [HttpPost("Login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Username);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null) return Unauthorized("Invalid Email or Password");
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
@@ -51,7 +65,9 @@ namespace Banking_Api.Controllers
                 Firstname = model.FirstName.ToLower(),
                 Lastname = model.LastName.ToLower(),
                 Email = model.Email,
-                EmailConfirmed = true
+                UserName = model.Email,
+                EmailConfirmed = true,
+                CreatedDate = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(newUser, model.Password);

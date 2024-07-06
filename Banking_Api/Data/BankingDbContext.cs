@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Banking_Api.Data
 {
-    public class BankingDbContext:IdentityDbContext
+    public class BankingDbContext:IdentityDbContext<User>
     {
 
         public BankingDbContext(DbContextOptions<BankingDbContext> options)
@@ -14,7 +14,6 @@ namespace Banking_Api.Data
 
 
 
-        public DbSet<User> Users {  get; set; }
     }
 
 
