@@ -25,15 +25,16 @@ namespace Banking_Api.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
         }
+   
+        
 
+        [Authorize]
 
-       [Authorize]
-       
         [HttpPost("UserToken")]
         public async Task<ActionResult<UserDto>> UserToken()
         {
             var user = await _userManager.FindByNameAsync(User.FindFirst(ClaimTypes.Email)?.Value);
-            return CreateUserDto(user);
+            return CreateUserDto(user); 
         }
 
 
@@ -57,8 +58,11 @@ namespace Banking_Api.Controllers
         {
             if (await CheckEmail(model.Email))
             {
-                return BadRequest($"The email {model.Email} already exists. Please use a different email address.");
+                return BadRequest(new { error = $"The email {model.Email} already exists, Please use a different email address." });
             }
+
+
+
 
             var newUser = new User
             {
@@ -71,9 +75,11 @@ namespace Banking_Api.Controllers
             };
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (!result.Succeeded) return BadRequest(new { errors = result.Errors.Select(e => e.Description).ToArray() });
 
-            return Ok("You have successfully registered. You can now sign in.");
+
+
+            return Ok(new JsonResult(new{title = "Account Created", message = "You have successfully registered. You can now sign in "}));
         }
 
 
