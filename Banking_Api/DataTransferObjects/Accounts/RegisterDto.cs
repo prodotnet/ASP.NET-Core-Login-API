@@ -15,7 +15,7 @@ namespace Banking_Api.DataTransferObjects.Accounts
         [RegularExpression("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$", ErrorMessage = "Invaild Email Address")]
         public string Email { get; set; }
         [Required]
-        [StringLength(12, MinimumLength =6 , ErrorMessage ="The password word must be at least 6 charcters and at most 12 characters")]
+        [StringLength(12, MinimumLength =6 , ErrorMessage = "The password must be at least 6 characters and at most 12 characters long.")]
         public string Password { get; set; }
 
     }

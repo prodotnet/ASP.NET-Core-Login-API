@@ -29,8 +29,7 @@ namespace Banking_Api.Controllers
         
 
         [Authorize]
-
-        [HttpPost("UserToken")]
+        [HttpGet("UserToken")]
         public async Task<ActionResult<UserDto>> UserToken()
         {
             var user = await _userManager.FindByNameAsync(User.FindFirst(ClaimTypes.Email)?.Value);
@@ -58,7 +57,11 @@ namespace Banking_Api.Controllers
         {
             if (await CheckEmail(model.Email))
             {
-                return BadRequest(new { error = $"The email {model.Email} already exists, Please use a different email address." });
+                return BadRequest(new
+                {
+                    error = "Validation Error",
+                    message = $"The email '{model.Email}' already exists. Please use a different email address."
+                });
             }
 
 
@@ -98,6 +101,8 @@ namespace Banking_Api.Controllers
         {
             return new UserDto
             {
+               
+                Email = user.Email,
                 FirstName = user.Firstname,
                 LastName = user.Lastname,
                 Jwt = _jwtService.CreateJWT(user)
